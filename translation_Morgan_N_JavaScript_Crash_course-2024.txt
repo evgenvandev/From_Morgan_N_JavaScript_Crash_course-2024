@@ -1,0 +1,133 @@
+	Morgan N. JavaScript Crash course - 2024
+
+Page-216
+
+In this first project, you’ll use JavaScript to re-create one of the first arcade video games: the classic Pong from Atari.
+В этом первом проекте вы будете использовать JavaScript, чтобы воссоздать одну из первых аркадных видеоигр: классическую Pong от Atari.
+Pong is a simple game, but it will teach you some important aspects of game design: a game loop, player input, collision detection, and score keeping.
+Pong — простая игра, но она научит вас некоторым важным аспектам игрового дизайна: игровому циклу, вводу данных игроком, обнаружению столкновений и ведению счета.
+We’ll even use some basic artificial intelligence to program the computer opponent.
+Мы даже воспользуемся базовым искусственным интеллектом, чтобы запрограммировать компьютерного противника.
+
+The Game
+Игра
+
+Pong was developed in 1972 and was released that year as a hugely successful arcade machine.
+Pong была разработана в 1972 году и выпущена в том же году как чрезвычайно успешный аркадный автомат.
+ It’s a very basic game, like table tennis, consisting of a ball and two paddles positioned on the left and right sides of the screen, which the players can move up and down.
+Это очень простая игра, похожая на настольный теннис, состоящая из мяча и двух ракеток, расположенных на левой и правой сторонах экрана, которые игроки могут перемещать вверх и вниз.
+If the ball hits the top or bottom edge of the screen, it bounces off, but if it hits the left or right edge the player on the opposite side scores a point.
+Если мяч попадает в верхний или нижний край экрана, он отскакивает, но если он попадает в левый или правый край, игрок на противоположной стороне получает очко.
+The ball bounces off the paddles normally, unless it hits near the top or bottom edge of the paddle, in which case the angle of return changes.
+Мяч обычно отскакивает от ракеток, если только он не ударяется о верхний или нижний край ракетки, и в этом случае угол возврата изменяется.
+
+In this chapter we’ll make our own version of Pong, which we’ll call Tennjs (like Tennis but with JS, get it?).
+В этой главе мы создадим нашу собственную версию Pong, которую назовем Tennjs (как Tennis, но с JS, понимаете?).
+In our game, the left paddle will be controlled by the computer and the right paddle will be controlled by a human player.
+В нашей игре левая ракетка будет управляться компьютером, а правая — игроком-человеком.
+In the original game, the paddles were controlled with rotating dial controllers, but in our version we’ll use the mouse.
+В оригинальной игре ракетки управлялись с помощью вращающихся регуляторов, но в нашей версии мы будем использовать мышь.
+
+Page-217
+
+The computer, rather than trying to anticipate where the ball will bounce, will just attempt to always match the vertical position of the ball.
+Компьютер, вместо того, чтобы пытаться предугадать, куда отскочит мяч, просто попытается всегда соответствовать вертикальному положению мяча.
+In order to give the human player a chance, we’ll set an upper limit on how fast the computer can move the paddle.
+Чтобы дать игроку-человеку шанс, мы установим верхний предел скорости, с которой компьютер может перемещать ракетку.
+
+Setup - Настройка
+
+We’ll begin by setting up the project’s file structure and creating a canvas for displaying the game.
+Начнем с настройки файловой структуры проекта и создания холста для отображения игры.
+As usual, the project will require an HTML file and a JavaScript file.
+Как обычно, для проекта потребуется файл HTML и файл JavaScript.
+We’ll start with the HTML file.
+Начнем с HTML-файла.
+Create a directory called tennjs and a file in that directory called index.xhtml.
+Создайте каталог с именем tennjs и файл в этом каталоге с именем index.xhtml.
+Then enter the content shown in Listing 10-1.
+Затем введите содержимое, показанное в Листинге 10-1.
+
+Listing 10-1: The index.xhtml file for our game.
+Листинг 10-1: Файл index.xhtml для нашей игры.
+
+This is almost exactly the same as the HTML file we created in Chapter 9, so there should be no surprises.
+Это почти точно такой же HTML-файл, который мы создали в Главе 9, поэтому сюрпризов быть не должно.
+The body element includes a canvas element, where we’ll draw the game, and a script element referencing the file script.js, where our game code will live.
+Элемент body включает в себя элемент canvas (холст), где мы будем рисовать игру, и элемент script, ссылающийся на файл script.js, где будет находиться наш игровой код.
+
+Next, we’ll write some JavaScript to set up the canvas.
+Далее мы напишем немного JavaScript для настройки холста.
+Create the file script.js, and enter the code shown in Listing 10-2.
+Создайте файл script.js и введите код, показанный в Листинге 10-2.
+
+Page-218
+
+Listing 10-2: Setting up the canvas in script.js
+Листинг 10-2: Настройка холста в script.js
+
+This code should also be familiar.
+Этот код также должен быть знаком.
+We first get a reference to the canvas with document.querySelector and get the canvas’s drawing context.
+Сначала мы получаем ссылку на холст с помощью document.querySelector и получаем контекст рисования холста.
+Then we save the width and height of the canvas to variables called width and height for easy access within the code.
+Затем мы сохраняем ширину и высоту холста в переменных, названных width и height, для облегчения доступа к ним в коде.
+Finally, we set the fill style to black and draw a black square the size of the canvas.
+Наконец, мы устанавливаем черный стиль заливки и рисуем черный квадрат размером с холст.
+This way the canvas appears to have a black background.
+Таким образом, холст будет иметь черный фон.
+
+Open index.xhtml in your browser, and you should see something like Figure 10-1.
+Откройте index.xhtml в своем браузере, и вы увидите что-то вроде Рисунка 10-1.
+
+Figure 10-1: Our black square
+Рисунок 10-1: Наш черный квадрат.
+
+We now have a blank, black canvas where we can create our game.
+Теперь у нас есть пустой черный холст, на котором мы можем создать игру.
+
+Page-219
+
+The Ball - Мяч
+
+Next, we’ll draw the ball.
+Далее мы нарисуем мяч.
+Add the code in Listing 10-3 to the end of script.js.
+Добавьте код из Листинга 10-3 в конец script.js.
+
+Listing 10-3: Drawing the ball
+Листинг 10-3: Рисование мяча
+
+This code uses the fillRect method to draw the ball as a small white square near the top-left corner of the canvas.
+Этот код использует метод fillRect для рисования мяча в виде небольшого белого квадрата в верхнем левом углу холста.
+As in the original Pong game, the ball is a square rather than a circle.
+Как и в оригинальной игре Pong, мяч представляет собой квадрат, а не круг.
+This gives the game a retro feel, and it will also simplify the task of detecting when the ball has collided with the walls or with a paddle.
+Это придает игре ощущение ретро, ​​а также упростит задачу определения момента столкновения мяча со стенами или ракеткой.
+The size of the ball is stored in a constant called BALL_SIZE.
+Размер мяча хранится в константе BALL_SIZE.
+We use the “true constant” all-caps style for the identifier name because the ball size won’t change during the course of the program.
+Мы используем стиль "истинная константа" с заглавными буквами для имени идентификатора, поскольку размер шарика не будет меняться в ходе работы программы.
+We could just use the value 5 instead of the constant BALL_SIZE when we call the fillRect method to draw the ball, but we’re going to end up needing to refer to the ball’s size a lot more throughout the program.
+Мы могли бы просто использовать значение 5 вместо константы BALL_SIZE, когда вызываем метод fillRect для рисования мяча, но в конечном итоге нам придется гораздо чаще ссылаться на размер мяча на протяжении всей программы.
+Giving the size a name will make it much easier to understand code that needs to know the size of the ball.
+Если дать размеру имя, будет намного проще понять код, которому необходимо знать размер мяча.
+The other good thing about this approach is that if we change our mind later and decide the ball should be bigger or smaller, we have to update the code in only place: the declaration of the BALL_SIZE constant.
+Еще одна хорошая вещь в этом подходе заключается в том, что если мы позже передумаем и решим, что мяч должен быть больше или меньше, нам придется обновить код только в одном месте: в объявлении константы BALL_SIZE.
+
+We keep track of the ball’s position with an object containing its x- and y-coordinates, created using an object literal.
+Мы отслеживаем положение мяча с помощью объекта, содержащего его координаты X и Y, созданного с использованием литерала объекта.
+In Chapter 9 we used separate variables for the x- and y-coordinates of the circle that was being drawn, but it’s a bit tidier to store the two variables together as one object, especially since this program is going to be longer and more complex.
+В Главе 9 мы использовали отдельные переменные для координат X и Y рисуемого круга, но немного удобнее хранить две переменные вместе как один объект, тем более что эта программа будет длиннее и сложнее.
+
+Page-220
+
+Refresh index.xhtml and you should see the white ball sitting in the top-left corner of the canvas, as shown in Figure 10-2.
+Обновите index.xhtml, и вы увидите белый шар в верхнем левом углу холста, как показано на Рисунке 10-2.
+
+Figure 10-2: The ball
+Рисунок 10-2: Мяч
+
+The ball is stationary for now, but soon enough we’ll write code to make it move.
+На данный момент мяч неподвижен, но вскоре мы напишем код, который заставит его двигаться.
+
