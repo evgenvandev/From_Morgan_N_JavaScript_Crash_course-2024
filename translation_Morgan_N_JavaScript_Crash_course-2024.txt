@@ -131,3 +131,130 @@ Figure 10-2: The ball
 The ball is stationary for now, but soon enough we’ll write code to make it move.
 На данный момент мяч неподвижен, но вскоре мы напишем код, который заставит его двигаться.
 
+Refactoring - Рефакторинг
+
+Next we’re going to do a simple refactor.
+Далее мы проведем простой рефакторинг.
+Refactoring is a software development term for modifying some code without changing its behavior, usually to make the code easier to understand or update.
+Рефакторинг — это термин разработки программного обеспечения, обозначающий изменение некоторого кода без изменения его поведения, обычно для облегчения понимания или обновления кода.
+As the code for a project grows more complex, refactoring can help keep it organized.
+По мере того, как код для проекта становится все более сложным, рефакторирование может помочь его организовать.
+
+In this case, I know that we’re going to want to draw to the canvas multiple times, not just once.
+В этом случае я знаю, что мы захотим обращаться к холстам несколько раз, а не только один раз.
+In fact, we’ll eventually want to redraw the canvas once every 30 ms to give our game the appearance of motion.
+На самом деле, мы в конечном итоге захотим перерисовать холст один раз каждые 30 мс, чтобы придать нашей игре появление движения.
+To make that easier to accomplish, we’ll refactor so all the current drawing code becomes part of a function called draw.
+Чтобы сделать это проще, мы будем рефакторить, чтобы весь текущий код рисования становился частью функции, называемой Draw.
+That way we can simply call the draw function anytime we want to redraw the canvas.
+Таким образом, мы можем просто вызвать функцию рисования (Draw) в любое время, когда хотим перерисовать холст.
+
+Page-221
+
+Update script.js with the changes shown in Listing 10-4.
+Обновите script.js с изменениями, показанными в Листинге 10-4.
+
+Listing 10-4: Refactoring the drawing code
+Список 10-4: Рефакторинг кода рисования
+
+The only change here is to group all the drawing code into a single function called draw ❶, which we then immediately call ❷.
+Единственное изменение здесь - группировка всего кода рисования в одну функцию, названную draw ❶, которую мы затем сразу же вызываем ❷.
+Because it’s a refactoring, nothing actually changes in the behavior of the program.
+Поскольку это рефакторинг, на самом деле ничто не меняется в поведении программы.
+You can refresh index.xhtml to confirm that everything still looks as before.
+Вы можете обновить index.xhtml, чтобы подтвердить, что все выглядит как раньше.
+
+The Game Loop
+Игровой цикл
+
+Almost all games contain a game loop that orchestrates everything that has to happen for each frame of the game.
+Почти все игры содержат игровой цикл, который организует все, что должно произойти для каждого кадра игры.
+Game loops are similar to animation loops, like the one we looked at in Chapter 9, but with some additional logic.
+Игровые циклы похожи на циклы анимации, как тот, который мы смотрели в Главе 9, но с некоторой дополнительной логикой.
+Here’s the general shape of the game loop in most games:
+Вот общая форма игрового цикла в большинстве игр:
+
+1. Clear canvas
+1. Чистый холст
+
+2. Draw image
+2. Отрисовка изображения
+
+3. Get player input
+3. Получить ввод игрока
+
+4. Update state
+4. Обновить состояние
+
+5. Check collisions
+5. Проверка столкновения
+
+6. Wait a short time
+6. Подождать короткое время
+
+7. Repeat
+7. Повторить
+
+Page-222
+
+Getting and acting on input from a player (or players) is the main thing that distinguishes a game from an animation.
+Получение информации от игрока (или игроков) и выполнение действий в соответствии с ней — это главное, что отличает игру от анимации.
+Collision detection is another important aspect of most games: checking for when two objects in the game meet and responding accordingly.
+Обнаружение столкновения является ещё одним важным аспектом большинства игр: проверка на то, когда два объекта в игре встречаются и отвечают соответствующим образом.
+Collision detection is what stops you from walking through walls or driving through another car—and in this case, it’s what will make the ball bounce off the walls and paddles.
+Обнаружение столкновения - это то, что мешает вам пройти через стены или проезжать через другую машину, и в этом случае это то, что заставит мяч отскочить от стен и ракеток.
+Apart from the player input and collision detection elements, the steps in the game loop are more or less the same as in an animation loop: we clear the canvas, draw the image, update the state of the game to move objects to their new positions, pause, and repeat.
+Помимо элементов ввода игрока и обнаружения столкновений, шаги в цикле игры более или менее такие же, как в цикле анимации: мы очищаем холст, рисуем изображение, обновляем состояние игры, чтобы перемещать объекты на свои новые позиции, пауза и повторить.
+
+Rather than trying to write the whole game loop at once, we’ll build it up gradually.
+Вместо того, чтобы пытаться написать весь игровой цикл одновременно, мы постепенно создадим его.
+Update script.js with the content in Listing 10-5, which will be the beginnings of the game loop in our game.
+Обновите script.js, добавив в него содержимое Листинга 10-5, которое станет началом игрового цикла в нашей игре.
+This code moves the ball (that is, updates the ball’s state), redraws the canvas, pauses, and repeats.
+Этот код перемещает мяч (то есть обновляет состояние мяча), перерисовывает холст, паузы и повторения.
+
+Page-223
+
+Listing 10-5: The game loop
+Листинг 10-5: Цикл игры
+
+The first change here is to initialize two new variables ❶, xSpeed and ySpeed.
+Первое изменение здесь - инициализация двух новых переменных ❶, xSpeed и ySpeed.
+We’ll use these to control the horizontal and vertical speed of the ball.
+Мы будем использовать их для управления горизонтальной и вертикальной скоростью мяча.
+The new update function ❷ uses these two variables to update the position of the ball.
+Новая функция update ❷ использует эти две переменные для обновления позиции мяча.
+For every frame, the ball will move xSpeed pixels along the x-axis and ySpeed pixels along the y-axis.
+Для каждого кадра мяч будет перемещаться на xSpeed пикселей ​​вдоль оси X и на ySpeed пикселей вдоль оси Y.
+The two variables start out at 4 and 2, so every frame the ball will move 4 pixels to the right and 2 pixels down.
+Две переменные начинаются с 4 и 2, поэтому каждый кадр, мяч будет перемещаться на 4 пикселя вправо и на 2 пикселя вниз.
+
+The gameLoop function ❸ calls the draw function followed by the update function.
+Функция gameLoop ❸ вызывает функцию draw, за которой следует функция update.
+Then it calls setTimeout(gameLoop, 30), which will call the gameLoop function again after 30 ms.
+Затем он вызывает setTimeout(gameLoop, 30), который снова будет вызвать функцию gameLoop через 30 мс.
+This is almost exactly the same as the setInterval technique we used in Chapter 9.
+Это почти то же самое, что и метод setInterval, который мы использовали в Главе 9.
+You may recall that setTimeout calls its function only once after the timeout, while setInterval calls its function repeatedly.
+Вы можете вспомнить, что setTimeout вызывает свою функцию только один раз после таймаута, в то время как setInterval вызывает свою функцию неоднократно.
+We’re using setTimeout here so we have more control over whether or not to keep looping; later on we’ll add some conditional logic to either call setTimeout or end the game.
+Мы используем здесь setTimeout, поэтому мы имеем больше контроля над тем, следует ли сохранять зацикливание; позже мы добавим некоторую условную логику, чтобы вызывать setTimeout или закончить игру.
+
+Notice the line above the setTimeout call beginning with two slashes (//).
+Обратите внимание на строку над вызовом setTimeout, начинающаяся с двух слешей (//).
+This is an example of a comment, a note for yourself (or other people reading your code) embedded in the program file.
+Это пример комментария, примечание для себя (или других людей, читающих ваш код), встроенный в файл программы.
+When a JavaScript program executes, any text on a line following a // is ignored (anything on the line before the // is still evaluated as JavaScript code).
+Когда программа JavaScript выполняется, любой текст на строке после // игнорируется (все на строке до // все еще оценивается как код JavaScript).
+Thus, you can use comments like this to explain how the code works, highlight important features, or make note of something you still need to do, without affecting the functionality of the program.
+Таким образом, вы можете использовать подобные комментарии, чтобы объяснить, как работает код, выделить важные функции или отметить то, что вам еще нужно сделать, не влияя на функциональность программы.
+
+Page-224
+
+At the end of the script, we call the gameLoop function ❹ to set the game in motion.
+В конце сценария мы называем функцию gameLoop ❹, чтобы привести игру в движение.
+Since gameLoop currently ends with setTimeout, the result is that gameLoop will be repeatedly called once every 30 ms.
+Поскольку gameLoop в настоящее время заканчивается setTimeout, в результате gameLoop будет повторно вызываться один раз каждые 30 мс.
+Reload your page and you should see the ball move down and to the right, much like the animation from Chapter 9.
+Перезагрузите страницу, и вы должны увидеть, как мяч движется вниз и вправо, очень похоже на анимацию из Главы 9.
+
